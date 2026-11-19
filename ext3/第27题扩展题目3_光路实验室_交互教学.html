@@ -78,9 +78,39 @@ const problems=[
 `<h3>第三关｜最短光程之谜</h3><p>把接收屏上的接收器固定在点 <b>R(r,3)</b>（−5 ≤ r ≤ 9）。点光源仍为 P(1,3)，镜面上的反射点 A(a,0) 可以移动（−3 ≤ a ≤ 5）。现在不必先假设 A 是真正的反射点，而是研究折线路径 <b>P → A → R</b> 的总长度。</p><ol><li>利用<strong>轴对称</strong>与<strong>两点之间线段最短</strong>，求使 PA+AR 最小时 A 的坐标（用 r 表示），并解释为什么该路线也符合平面镜反射定律。</li><li>当 R=(7,3) 时，求最短光程，并判断此时 R 是否也是 P 关于 A 的链垂点。</li><li>接收器在接收屏上滑动时，求同时满足“总路程最短”且“R 是链垂点”的全部接收器位置。</li></ol><div class="alert">建议画法：勾选“镜像点 P′”，然后用直线连接 P′ 与 R，观察这条直线与镜面的交点。可以自行画垂线、辅助三角形。</div>`
 ];
 const answers=[
-`<h3>① 反射路径与坐标</h3><p>过点 A(a,0) 作水平镜面的法线（即竖直直线 x=a），交水平接收屏 y=3 于点 M(a,3)，则 AM ⊥ PQ，且 AM=3。</p><p><b>1）一般情形（a ≠ 1）：</b>由光的反射定律，入射角等于反射角，即 ∠PAM=∠QAM。在 Rt△PAM 与 Rt△QAM 中，∠PMA=∠QMA=90°，AM=AM，∠PAM=∠QAM，由 <strong>ASA</strong> 可证 △PAM ≅ △QAM。</p><p>因此 <b>AP=AQ</b>，且 PM=QM。由于 P(1,3) 与 Q 分别位于法线 x=a 两侧，M(a,3) 恰为线段 PQ 的中点，故 x<sub>Q</sub>−a = a−1，解得：</p><div class="formula"><b>Q=(2a−1,3)</b>。</div><p><b>2）特殊情形（a = 1）：</b>此时光线沿直线 x=1 垂直射向镜面，入射角与反射角均为 0°，反射光线原路返回，Q 与 P(1,3) 重合。此时 Q=(2×1−1,3)=(1,3) 依然成立，且 AP=AQ=3。</p><p class="explain-note">易错点：反射角是光线与镜面<strong>法线</strong>的夹角，而不是与镜面的夹角；讨论三角形全等时，注意区分 a=1（垂直入射、图形退化为线段）的特殊情况。</p>`,
-`<h3>② 链垂点的全部位置</h3><p>由第一关已知 AP=AQ 恒成立。要使 Q 成为点 P 关于点 A 的“链垂点”，只需再满足 ∠PAQ=90°，即 △PAQ 是以 A 为直角顶点的等腰直角三角形。</p><p>P、Q 都在 y=3 的水平直线上，法线 AM ⊥ PQ 于 M(a,3)，且 AM=3。由等腰三角形“三线合一”，AM 平分顶角 ∠PAQ，将其分成两个 45° 的等腰直角三角形 Rt△PAM 与 Rt△QAM，因此 <b>PM=MQ=AM=3</b>。</p><p>点 M=(a,3)，而 P=(1,3)，所以：</p><div class="formula">|a−1|=3 → <b>a=−2 或 a=4</b>。</div><p>检验范围：a=−2 与 a=4 均满足镜面范围 −3 ≤ a ≤ 5，均为有效解。代入 Q=(2a−1,3)：</p><div class="formula"><b>A₁=(−2,0) 时，Q₁=(−5,3)</b>；<br><b>A₂=(4,0) 时，Q₂=(7,3)</b>。</div><p><b>对称性证明（不用三角函数）：</b>过 P(1,3) 作 PH ⊥ x 轴于 H(1,0)，则 PH=3，且 PH ∥ AM。由内错角相等得 ∠HPA₁=∠PA₁M=45°、∠HPA₂=∠PA₂M=45°，故 Rt△PHA₁ 与 Rt△PHA₂ 都是等腰直角三角形，且 Rt△PHA₁ ≅ Rt△PHA₂（ASA）。因此 HA₁=HA₂=3，A₁、A₂ 位于直线 x=1 两侧且到 x=1 距离相等，关于 x=1 对称；同理，Q₁、Q₂ 位于 P(1,3) 两侧且 PQ₁=PQ₂=6，也关于直线 x=1 对称。</p><p class="explain-note">纯代数检验：向量 AP=(1−a,3)，向量 AQ=(a−1,3)，直角等价于 9−(a−1)²=0。这里提供检验思路，初二上可优先用等腰直角三角形与全等证明。</p>`,
-`<h3>③ 轴对称与最短光程</h3><p><b>1）最短路径与反射定律验证：</b>把 P=(1,3) 关于 x 轴作对称点 P′=(1,−3)。对镜面上任何一点 A=(a,0)，轴对称给出 PA=P′A，所以：</p><div class="formula">PA+AR=P′A+AR ≥ P′R。</div><p>当且仅当 A 为线段 P′R 与 x 轴的交点（即 P′、A、R 三点共线）时取等号。P′ 的纵坐标 −3，R 的纵坐标 3，所以线段 P′R 在 y=0 的交点位于线段的中点：</p><div class="formula"><b>A=((1+r)/2,0)</b>，<b>最短光程=√((r−1)²+36)</b>。</div><p>对于 −5≤r≤9，有 −2≤(1+r)/2≤5，始终落在镜面允许范围 −3≤a≤5 内，因此该最小值都可取得。</p><p><b>为何符合反射定律：</b>当 r=1 时，P′、A、R 共线于 x=1，光线垂直入射并原路返回，入射角与反射角均为 0°。当 r≠1 时，由轴对称知光线与镜面夹角 ∠PAx=∠P′Ax；因 P′、A、R 三点共线，由对顶角相等得 ∠P′Ax=∠RAx′（镜面另一侧），于是 ∠PAx=∠RAx′。它们分别与入射角、反射角互余，故入射角等于反射角，符合平面镜反射定律。</p><p><b>2）当 R=(7,3) 时：</b>最佳反射点 A=(4,0)，最短总长为 <b>√72=6√2</b>。此时 A 到 P、R 的水平与竖直距离均为 3，故 PA=AR=3√2，两条路径分别与法线成 45°，∠PAR=90°，因此 <b>R 是点 P 关于点 A 的链垂点</b>。</p><p><b>3）同时满足“最短路程”与“链垂点”的全部位置：</b>一般 r 的最佳点 A=((1+r)/2,0) 到 P 和 R 的水平距离均为 |r−1|/2，竖直距离均为 3，故总有 PA=AR。要使 ∠PAR=90°，必须有 <b>|r−1|/2=3</b>，所以：</p><div class="formula"><b>r=−5 或 r=7</b>，对应 R=(−5,3) 或 R=(7,3)。</div><p>检验范围：r=−5 与 r=7 均满足 −5≤r≤9，均为有效接收器位置。</p><p class="explain-note">知识串联：光的反射定律 ↔ 镜像的轴对称作图 ↔ 三角形不等式（两点之间线段最短） ↔ 等腰直角三角形 ↔ 链垂点。</p>`
+`<h3>① 反射路径与坐标</h3>
+<p><b>作辅助线：</b>过 A(a,0) 作镜面的法线 AM ⊥ x 轴，交接收屏 y=3 于 M(a,3)。因 PQ 在 y=3 上、y=3 ∥ x 轴，所以 AM ⊥ PQ，AM=3。</p>
+<p><b>（2）（3）当 a ≠ 1 时，先证全等：</b>入射角、反射角均指光线与法线的夹角。依反射定律 ∠PAM=∠QAM；又 ∠PMA=∠QMA=90°，AM=AM。两角及其夹边对应相等（<b>ASA</b>），故 △PAM ≅ △QAM。</p>
+<p>因此 <b>AP=AQ，PM=QM</b>。由于 a≠1，P 与 Q 分别在法线 AM 的两侧，M 为 PQ 的中点，故 x<sub>Q</sub>−a=a−1，即：</p>
+<div class="formula"><b>Q=(2a−1,3)</b>，并且对任意 a≠1 均有 AP=AQ。</div>
+<p><b>特例 a=1：</b>此时 P=M=(1,3)，PA 垂直镜面，入射角和反射角均为 0°，反射光线沿原路返回，Q=P=(1,3)。此时三角形退化，<b>不能套用 ASA</b>；但 Q=(2×1−1,3) 与 AP=AQ=3 仍成立。</p>
+<p class="explain-note">结论：对全部 −3≤a≤5，Q=(2a−1,3)，AP=AQ；反射角始终相对于法线测量，而不是镜面。</p>`,
+`<h3>② 链垂点的全部位置</h3>
+<p><b>（1）寻找 a：</b>由第一关 AP=AQ。若 Q 是 P 关于 A 的链垂点，还需 ∠PAQ=90°。因为 AP=AQ=√((a−1)²+9)&gt;0 且夹角为 90°，P≠Q，故不是 a=1 的退化情形，△PAQ 是等腰直角三角形。</p>
+<p>作 AM ⊥ PQ，M=(a,3)，AM=3。由等腰三角形“三线合一”，AM 平分 ∠PAQ，所以 ∠PAM=∠QAM=45°。于是 Rt△PAM 是等腰直角三角形，<b>PM=AM=3</b>；由 P=(1,3)、M=(a,3) 得：</p>
+<div class="formula">|a−1|=3，解得 <b>a=−2 或 a=4</b>。</div>
+<p><b>范围检验：</b>−3≤−2≤5，−3≤4≤5，两值均在镜面范围内。</p>
+<p><b>（2）求 Q：</b>由第一关 Q=(2a−1,3)：</p>
+<div class="formula"><b>A₁=(−2,0)，Q₁=(−5,3)；A₂=(4,0)，Q₂=(7,3)</b>。</div>
+<p><b>（3）纯几何证明关于 x=1 对称：</b>过 P(1,3) 作 PH ⊥ x 轴，垂足 H=(1,0)，PH=3。对于两种解，AM ∥ PH；由平行线的角关系，∠HPA₁=∠PA₁M=45°，∠HPA₂=∠PA₂M=45°。又 ∠PHA₁=∠PHA₂=90° 且公共夹边 PH=PH，由 <b>ASA</b>，Rt△PHA₁ ≅ Rt△PHA₂，故 HA₁=HA₂=3。A₁、A₂ 分居 H 左右，所以关于直线 PH（x=1）对称。</p>
+<p>又 AM 在等腰 △PAQ 中是中线，PM=MQ=3。M₁=(−2,3)、M₂=(4,3)，P 位于各 M 的同侧、Q 位于另一侧，因此 PQ₁=PQ₂=6，且 Q₁、Q₂ 分别位于 P 两侧；二者在 y=3 上，到 x=1 的距离相等，故 <b>Q₁、Q₂ 也关于 x=1 对称</b>。</p>
+<p class="explain-note">使用的均是八年级知识：ASA 全等、平行线角关系、等腰三角形“三线合一”、45° 等腰直角三角形；没有使用三角函数或向量。</p>`,
+`<h3>③ 轴对称与最短光程</h3>
+<p><b>（1）求最短路径：</b>把 P(1,3) 关于镜面 x 轴作对称点 P′(1,−3)。A 在 x 轴上，故 PA=P′A。于是对任意允许的 A：</p>
+<div class="formula">PA+AR=P′A+AR ≥ P′R。</div>
+<p>等号在 P′、A、R 三点共线，且 A 位于线段 P′R 上时成立。P′ 与 R(r,3) 到 x 轴的竖直距离均为 3，故交点 A 是 P′R 的中点：</p>
+<div class="formula"><b>A=((1+r)/2,0)</b>；最短光程 <b>P′R=√((r−1)²+36)</b>。</div>
+<p><b>范围检查：</b>−5≤r≤9 给出 −2≤(1+r)/2≤5，完全处于镜面允许范围 −3≤a≤5，所以以上最短路程确实可以取得。</p>
+<p><b>为什么这条最短光路满足反射定律（不使用三角函数）：</b>设 H=(1,0) 为 PP′ 与镜面的交点；过最优点 A 作法线 AM ⊥ x 轴，交 y=3 于 M(a,3)，因此 PH ∥ AM。</p>
+<p>当 <b>r≠1</b> 时，A≠H。在 Rt△PHA 与 Rt△P′HA 中，PH=P′H=3、HA=HA，∠PHA=∠P′HA=90°，由 <b>SAS</b> 得 △PHA ≅ △P′HA，进而 ∠APH=∠AP′H。又 PH ∥ AM，所以 ∠PAM=∠APH；因为 P′、A、R 共线且 P′A 与 AR 同向，P′H ∥ AM，所以 ∠RAM=∠AP′H。综上：</p>
+<div class="formula"><b>∠PAM=∠RAM</b>（入射角=反射角）。</div>
+<p>这两个角均以 A 处法线 AM 为基准。该论证适用于 r&gt;1 与 r&lt;1，不需要对镜面左右方向分别取含糊的角记号。</p>
+<p><b>特例 r=1：</b>P=R=(1,3)，最优点 A=H=(1,0)，垂直入射后沿原路返回；两个反射角均为 0°，最短光程为 6。但 ∠PAR=0° 而不是 90°，所以此时 <b>R 不是链垂点</b>；退化情形不能使用上述两个三角形的 SAS 证明。</p>
+<p><b>（2）R=(7,3) 时：</b>最优 A=(4,0)，最短光程 √((7−1)²+36)=<b>6√2</b>。在 A 两侧，水平距离各为 3、竖直距离各为 3，得到两个等腰直角三角形，故 PA=AR=3√2，且 ∠PAM=∠MAR=45°，∠PAR=90°，因此 <b>R 是 P 关于 A 的链垂点</b>。</p>
+<p><b>（3）全部同时满足条件的 R：</b>最优 A=((1+r)/2,0) 使 P、R 相对法线 AM 的水平距离都为 |r−1|/2，竖直距离都为 3；由勾股定理（或全等）已自动保证 <b>PA=AR</b>。还须使 ∠PAR=90°。因 AM 平分顶角，这等价于两个直角三角形均为 45°—45°—90°，即 <b>|r−1|/2=3</b>；反之该等式成立也必有 ∠PAR=90°，所以此条件既必要又充分。</p>
+<div class="formula"><b>r=−5 或 r=7</b>，对应 <b>R=(−5,3)</b> 或 <b>R=(7,3)</b>。</div>
+<p><b>最后检验：</b>−5、7 均在接收器范围 [−5,9] 内；其最佳反射点分别为 A=(−2,0)、(4,0)，也都在镜面范围 [−3,5] 内，且均满足 PA=AR、∠PAR=90°。</p>
+<p class="explain-note">知识链：轴对称 → 两点之间线段最短 → SAS 全等与平行线角关系 → 光的反射定律 → 等腰直角三角形 → 链垂点。</p>`
 ];
 function setStage(n){state.stage=n;state.playing=false;state.direction=1;$('play').textContent='▶ 自动扫描';document.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-selected',String(Number(b.dataset.stage)===n)));$('questionBody').innerHTML=problems[n];$('diagramSub').textContent=n===2?'拖动光斑 A 和接收点 R，尝试找到最短路径':'拖动橙色镜面光斑 A，观察入射和反射的角度';$('rRow').hidden=n!==2;$('imageFlag').style.display=n===0?'none':'inline-flex';if(n===0){state.showImage=false;$('mirrorImage').checked=false}$('answerBody').innerHTML=state.unlocked?answers[n]:'';state.a=n===0?3:n===1?2:1;state.r=7;$('aSlider').value=state.a;$('rSlider').value=state.r;render()}
 function svgPoint(e){const rect=$('board').getBoundingClientRect();return{x:(e.clientX-rect.left)*900/rect.width,y:(e.clientY-rect.top)*620/rect.height}}
