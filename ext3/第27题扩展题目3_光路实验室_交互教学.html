@@ -29,6 +29,1378 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
 <div class="actionrow"><button class="action" id="undo">↶ 撤销</button><button class="action" id="redo">↷ 重做</button><button class="action" id="clear">清空辅助图</button><button class="action" id="export">导出 SVG</button><span id="drawCount" class="status">已画 0 个图形</span></div><div id="toolHint" class="hintline">选择/拖动：拖动橙色点 A；也可以拖动自己画的图形。三角形、弧线需依次点击 3 个点；按 Esc 取消。</div></div>
 <div class="playbox"><div class="range-row"><label for="aSlider">镜面位置 a</label><input type="range" id="aSlider" min="-3" max="5" step="0.01" value="1" aria-label="改变镜面点 A 横坐标"><output class="readout" id="aOut">1.00</output></div><div class="range-row" id="rRow" hidden><label for="rSlider">接收点 r</label><input type="range" id="rSlider" min="-5" max="9" step="0.01" value="7" aria-label="改变接收点 R 横坐标"><output class="readout" id="rOut">7.00</output></div><div class="actionrow"><button class="action primary" id="play">▶ 自动扫描</button><button class="action" id="reset">↺ 复位</button><label class="sub">速度 <select id="speed" aria-label="动画速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label class="sub" id="imageFlag"><input type="checkbox" id="mirrorImage">显示镜像点 P′</label><span class="status">画图工具开启时暂停拖动实验点</span></div></div></section>
 <aside class="panel"><div class="ptitle"><h2>自主探究题</h2><span class="sub">先探究，再解锁解析</span></div><div class="question"><div id="questionBody"></div><div class="data"><strong>实时实验记录（不直接给答案）</strong><div class="metrics"><div class="metric"><span>镜面光斑 A</span><b id="obsA">—</b></div><div class="metric"><span id="obsQLabel">反射交点 Q</span><b id="obsQ">—</b></div><div class="metric"><span id="obsLengthLabel">两条等长光段</span><b id="obsLength">—</b></div><div class="metric"><span id="obsAngleLabel">夹角 ∠PAQ</span><b id="obsAngle">—</b></div></div></div><div class="evidence" id="feedback">尝试移动 A，再使用辅助线工具记录你观察到的几何关系。</div><div class="quiz"><label for="studentNote">我的推导与猜想（保存在本页浏览器标签内）</label><textarea id="studentNote" rows="5" style="width:100%;border:1px solid #cbd8e8;border-radius:10px;padding:9px;font:inherit;resize:vertical" placeholder="试着写下坐标、证明思路、结论……"></textarea><small>学习笔记不会上传，也不会自动保存到云端。关闭页面前可复制到自己的笔记。</small><div class="actionrow"><button class="action" id="copyNote">复制笔记</button><button class="action" id="clearNote">清空笔记</button></div></div></div></aside></div>
+<section class="panel" id="physicsAnimPanel" style="margin-top:16px;overflow:hidden"><div class="ptitle"><div><h2>物理过程动态演示｜光路实验室动画</h2><div class="sub">可视化光子等速传播、镜面反射角、90° 链垂点锁相与费马最短光程竞速（离线内嵌）</div></div><span class="pill" style="background:#e8f7f5;color:#0f766e;border-color:#bfe8e2">物理动画 · 交互演示</span></div><iframe id="physicsAnimFrame" title="光路实验室物理动画" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;title&gt;光路实验室 · 交互物理动画（FrankMath EXT 03）&lt;/title&gt;
+  &lt;style&gt;
+    :root {
+      --bg: #07111f;
+      --surface: #0d1b2e;
+      --surface-2: #132540;
+      --border: rgba(148, 197, 255, 0.16);
+      --text: #eaf3ff;
+      --muted: #8ea9cc;
+      --cyan: #38e8ff;
+      --amber: #ffaa3b;
+      --emerald: #34e0a1;
+      --violet: #b784ff;
+      --gold: #ffd452;
+      --rose: #ff6b8b;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at 20% 0%, #102542 0%, #07111f 62%);
+      color: var(--text);
+      font-family: &quot;Inter&quot;, -apple-system, BlinkMacSystemFont, &quot;PingFang SC&quot;, &quot;Microsoft YaHei&quot;, sans-serif;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 16px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, rgba(19, 37, 64, 0.92), rgba(11, 24, 43, 0.92));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .title-group h1 {
+      margin: 0;
+      font-size: 1.18rem;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(56, 232, 255, 0.14);
+      color: var(--cyan);
+      border: 1px solid rgba(56, 232, 255, 0.35);
+    }
+    .subtitle {
+      margin: 4px 0 0;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tab-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(13, 27, 46, 0.85);
+      color: var(--muted);
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .tab-btn:hover {
+      color: var(--text);
+      border-color: rgba(56, 232, 255, 0.45);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #1b56b8, #1484b8);
+      color: #fff;
+      border-color: rgba(56, 232, 255, 0.7);
+      box-shadow: 0 0 18px rgba(56, 232, 255, 0.22);
+    }
+
+    .stage-card {
+      background: rgba(13, 27, 46, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8, 18, 33, 0.65);
+    }
+    .stage-desc {
+      font-size: 0.84rem;
+      color: #cfe1f7;
+    }
+    .status-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(52, 224, 161, 0.12);
+      color: var(--emerald);
+      border: 1px solid rgba(52, 224, 161, 0.35);
+      white-space: nowrap;
+    }
+    .status-pill.gold {
+      background: rgba(255, 212, 82, 0.16);
+      color: var(--gold);
+      border-color: rgba(255, 212, 82, 0.55);
+      box-shadow: 0 0 12px rgba(255, 212, 82, 0.22);
+    }
+    .status-pill.violet {
+      background: rgba(183, 132, 255, 0.16);
+      color: var(--violet);
+      border-color: rgba(183, 132, 255, 0.45);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 440px;
+      background: radial-gradient(circle at 50% 35%, #0d213b 0%, #06101e 100%);
+      touch-action: none;
+      cursor: grab;
+    }
+    .canvas-wrap.dragging {
+      cursor: grabbing;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      background: rgba(8, 18, 33, 0.75);
+    }
+    .metric {
+      background: rgba(19, 37, 64, 0.7);
+      border: 1px solid rgba(148, 197, 255, 0.12);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .metric .label {
+      font-size: 0.73rem;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .metric .val {
+      font-size: 0.96rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+    .metric .val.cyan { color: var(--cyan); }
+    .metric .val.amber { color: var(--amber); }
+    .metric .val.emerald { color: var(--emerald); }
+    .metric .val.gold { color: var(--gold); }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px 16px;
+      background: rgba(13, 27, 46, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .ctrl-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 7px 13px;
+      border-radius: 9px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .btn:hover {
+      border-color: rgba(56, 232, 255, 0.55);
+      background: #1a3357;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #1b65d6, #1394c4);
+      border-color: rgba(56, 232, 255, 0.65);
+      color: #fff;
+    }
+    .btn.accent {
+      background: linear-gradient(135deg, #d97706, #ea580c);
+      border-color: rgba(255, 170, 59, 0.7);
+      color: #fff;
+    }
+    .btn.preset {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      background: rgba(19, 37, 64, 0.6);
+      color: #cde3ff;
+    }
+    .btn.preset:hover {
+      background: rgba(56, 232, 255, 0.18);
+      color: #fff;
+    }
+    select.speed-sel {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: #d0e2f7;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 9px;
+      background: rgba(19, 37, 64, 0.55);
+      border: 1px solid var(--border);
+      user-select: none;
+    }
+    .toggle input {
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+    .sliders {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .slider-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(8, 18, 33, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+    .slider-box.hidden { display: none; }
+    .slider-box label {
+      font-size: 0.82rem;
+      color: #cfe1f7;
+      white-space: nowrap;
+      min-width: 112px;
+    }
+    .slider-box input[type=&quot;range&quot;] {
+      flex: 1;
+      accent-color: var(--amber);
+      cursor: pointer;
+    }
+    .slider-box.r-slider input[type=&quot;range&quot;] {
+      accent-color: var(--emerald);
+    }
+    .slider-val {
+      font-size: 0.84rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      min-width: 44px;
+      text-align: right;
+      color: var(--amber);
+    }
+    .slider-box.r-slider .slider-val {
+      color: var(--emerald);
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      padding-top: 2px;
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    @media (max-width: 640px) {
+      .canvas-wrap { height: 360px; }
+      .header { padding: 12px 14px; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;app&quot;&gt;
+    &lt;header class=&quot;header&quot;&gt;
+      &lt;div class=&quot;title-group&quot;&gt;
+        &lt;h1&gt;光路实验室 · 物理动画演示 &lt;span class=&quot;badge&quot;&gt;FrankMath · EXT 03&lt;/span&gt;&lt;/h1&gt;
+        &lt;p class=&quot;subtitle&quot;&gt;直接拖动镜面光斑 A(a, 0) 或接收点 R(r, 3)，观察光子传播、反射角、90° 链垂点与最短光程竞速&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;tabs&quot; role=&quot;tablist&quot;&gt;
+        &lt;button class=&quot;tab-btn active&quot; data-stage=&quot;0&quot; type=&quot;button&quot;&gt;① 光的反射与等距&lt;/button&gt;
+        &lt;button class=&quot;tab-btn&quot; data-stage=&quot;1&quot; type=&quot;button&quot;&gt;② 寻找 90° 链垂点&lt;/button&gt;
+        &lt;button class=&quot;tab-btn&quot; data-stage=&quot;2&quot; type=&quot;button&quot;&gt;③ 最短光程 · 光子竞速&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;section class=&quot;stage-card&quot;&gt;
+      &lt;div class=&quot;canvas-header&quot;&gt;
+        &lt;div class=&quot;stage-desc&quot; id=&quot;stageDesc&quot;&gt;光源 P(1, 3) 射向水平镜面 A(a, 0)，遵循“入射角 = 反射角”反射至接收屏 y = 3 上的 Q 点。&lt;/div&gt;
+        &lt;div class=&quot;status-pill&quot; id=&quot;statusPill&quot;&gt;实时光路模拟中&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;canvas-wrap&quot; id=&quot;canvasWrap&quot;&gt;
+        &lt;canvas id=&quot;scene&quot;&gt;&lt;/canvas&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;telemetry&quot; id=&quot;telemetry&quot;&gt;
+        &lt;div class=&quot;metric&quot;&gt;
+          &lt;div class=&quot;label&quot; id=&quot;mLabel1&quot;&gt;镜面光斑 A&lt;/div&gt;
+          &lt;div class=&quot;val amber&quot; id=&quot;mVal1&quot;&gt;(3.00, 0)&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;metric&quot;&gt;
+          &lt;div class=&quot;label&quot; id=&quot;mLabel2&quot;&gt;反射交点 Q&lt;/div&gt;
+          &lt;div class=&quot;val emerald&quot; id=&quot;mVal2&quot;&gt;(5.00, 3)&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;metric&quot;&gt;
+          &lt;div class=&quot;label&quot; id=&quot;mLabel3&quot;&gt;入射角 / 反射角&lt;/div&gt;
+          &lt;div class=&quot;val cyan&quot; id=&quot;mVal3&quot;&gt;33.7° / 33.7°&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;metric&quot;&gt;
+          &lt;div class=&quot;label&quot; id=&quot;mLabel4&quot;&gt;光路长度 AP / AQ&lt;/div&gt;
+          &lt;div class=&quot;val&quot; id=&quot;mVal4&quot;&gt;3.61 / 3.61&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;metric&quot;&gt;
+          &lt;div class=&quot;label&quot; id=&quot;mLabel5&quot;&gt;夹角 ∠PAQ&lt;/div&gt;
+          &lt;div class=&quot;val gold&quot; id=&quot;mVal5&quot;&gt;67.4°&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+
+    &lt;section class=&quot;controls&quot;&gt;
+      &lt;div class=&quot;ctrl-row&quot;&gt;
+        &lt;button class=&quot;btn primary&quot; id=&quot;btnPlay&quot; type=&quot;button&quot;&gt;▶ 自动扫描&lt;/button&gt;
+        &lt;button class=&quot;btn accent&quot; id=&quot;btnPulse&quot; type=&quot;button&quot;&gt;⚡ 发射光脉冲&lt;/button&gt;
+        &lt;button class=&quot;btn&quot; id=&quot;btnReset&quot; type=&quot;button&quot;&gt;↺ 复位&lt;/button&gt;
+        &lt;select class=&quot;speed-sel&quot; id=&quot;speedSel&quot; aria-label=&quot;动画速度&quot;&gt;
+          &lt;option value=&quot;0.5&quot;&gt;0.5× 慢速&lt;/option&gt;
+          &lt;option value=&quot;1&quot; selected&gt;1× 正常&lt;/option&gt;
+          &lt;option value=&quot;1.8&quot;&gt;1.8× 快速&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;label class=&quot;toggle&quot;&gt;
+          &lt;input type=&quot;checkbox&quot; id=&quot;chkNormal&quot; checked /&gt;
+          法线与角度
+        &lt;/label&gt;
+        &lt;label class=&quot;toggle&quot;&gt;
+          &lt;input type=&quot;checkbox&quot; id=&quot;chkGeo&quot; checked /&gt;
+          &lt;span id=&quot;geoToggleLabel&quot;&gt;显示全等三角形 (ASA)&lt;/span&gt;
+        &lt;/label&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;sliders&quot;&gt;
+        &lt;div class=&quot;slider-box&quot;&gt;
+          &lt;label for=&quot;sliderA&quot;&gt;镜面点 A 横坐标 a&lt;/label&gt;
+          &lt;input type=&quot;range&quot; id=&quot;sliderA&quot; min=&quot;-3&quot; max=&quot;5&quot; step=&quot;0.05&quot; value=&quot;3&quot; /&gt;
+          &lt;span class=&quot;slider-val&quot; id=&quot;valA&quot;&gt;3.00&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;slider-box r-slider hidden&quot; id=&quot;sliderRBox&quot;&gt;
+          &lt;label for=&quot;sliderR&quot;&gt;接收点 R 横坐标 r&lt;/label&gt;
+          &lt;input type=&quot;range&quot; id=&quot;sliderR&quot; min=&quot;-5&quot; max=&quot;9&quot; step=&quot;0.05&quot; value=&quot;7&quot; /&gt;
+          &lt;span class=&quot;slider-val&quot; id=&quot;valR&quot;&gt;7.00&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;ctrl-row&quot; id=&quot;presetsRow&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;legend&quot; id=&quot;legendRow&quot;&gt;
+        &lt;span&gt;&lt;i class=&quot;dot&quot; style=&quot;background:#38e8ff&quot;&gt;&lt;/i&gt;光源 P(1, 3) / 法线&lt;/span&gt;
+        &lt;span&gt;&lt;i class=&quot;dot&quot; style=&quot;background:#ffaa3b&quot;&gt;&lt;/i&gt;入射光线 &amp; 镜面光斑 A（可拖动）&lt;/span&gt;
+        &lt;span&gt;&lt;i class=&quot;dot&quot; style=&quot;background:#34e0a1&quot;&gt;&lt;/i&gt;反射光线 &amp; 接收点 Q / R&lt;/span&gt;
+        &lt;span&gt;&lt;i class=&quot;dot&quot; style=&quot;background:#b784ff&quot;&gt;&lt;/i&gt;镜像点 P′(1, −3) / 辅助对称图形&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (function () {
+      const canvas = document.getElementById(&#x27;scene&#x27;);
+      const wrap = document.getElementById(&#x27;canvasWrap&#x27;);
+      const ctx = canvas.getContext(&#x27;2d&#x27;);
+
+      const state = {
+        stage: 0,
+        a: 3.0,
+        r: 7.0,
+        playing: false,
+        sweepDir: 1,
+        speed: 1.0,
+        showNormal: true,
+        showGeo: true,
+        dragging: null,
+        time: 0,
+        pulses: [],
+        race: null,
+        mirrorFlash: 0,
+        hitFlash: 0,
+        snapLockFlash: 0
+      };
+
+      // Coordinate system bounds
+      const WORLD_X_MIN = -6.8;
+      const WORLD_X_MAX = 9.8;
+      const WORLD_Y_MIN = -4.0;
+      const WORLD_Y_MAX = 4.9;
+
+      let view = { width: 800, height: 440, scale: 45, ox: 340, oy: 240 };
+
+      function resizeCanvas() {
+        const rect = wrap.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        view.width = rect.width;
+        view.height = rect.height;
+        const padX = 24;
+        const padY = 20;
+        const scaleX = (view.width - padX * 2) / (WORLD_X_MAX - WORLD_X_MIN);
+        const scaleY = (view.height - padY * 2) / (WORLD_Y_MAX - WORLD_Y_MIN);
+        view.scale = Math.min(scaleX, scaleY);
+
+        const worldW = (WORLD_X_MAX - WORLD_X_MIN) * view.scale;
+        const worldH = (WORLD_Y_MAX - WORLD_Y_MIN) * view.scale;
+        const left = (view.width - worldW) / 2;
+        const top = (view.height - worldH) / 2;
+
+        view.ox = left - WORLD_X_MIN * view.scale;
+        view.oy = top + WORLD_Y_MAX * view.scale;
+      }
+
+      function toScreen(wx, wy) {
+        return {
+          x: view.ox + wx * view.scale,
+          y: view.oy - wy * view.scale
+        };
+      }
+
+      function toWorld(sx, sy) {
+        return {
+          x: (sx - view.ox) / view.scale,
+          y: (view.oy - sy) / view.scale
+        };
+      }
+
+      function clamp(v, lo, hi) {
+        return Math.max(lo, Math.min(hi, v));
+      }
+
+      function dist(x1, y1, x2, y2) {
+        return Math.hypot(x2 - x1, y2 - y1);
+      }
+
+      function fmt(n, digits = 2) {
+        const s = Number(n).toFixed(digits);
+        return s === &#x27;-0.00&#x27; || s === &#x27;-0.0&#x27; ? s.slice(1) : s;
+      }
+
+      // Emit a glowing light pulse along current path
+      function emitPulse() {
+        if (state.stage === 2) {
+          // Stage 3: start photon race!
+          const aOpt = (1 + state.r) / 2;
+          const lenOpt = dist(1, 3, aOpt, 0) + dist(aOpt, 0, state.r, 3);
+          const lenTrial = dist(1, 3, state.a, 0) + dist(state.a, 0, state.r, 3);
+          state.race = {
+            t: 0,
+            speedWorld: 4.8,
+            aOpt,
+            aTrial: state.a,
+            r: state.r,
+            lenOpt,
+            lenTrial,
+            optDone: false,
+            trialDone: false,
+            winner: null
+          };
+          updateUI();
+        } else {
+          const qx = 2 * state.a - 1;
+          const d1 = dist(1, 3, state.a, 0);
+          const d2 = dist(state.a, 0, qx, 3);
+          state.pulses.push({
+            distTraveled: 0,
+            speedWorld: 5.2,
+            d1,
+            total: d1 + d2,
+            bounced: false
+          });
+        }
+      }
+
+      // Presets per stage
+      const stageConfigs = [
+        {
+          desc: &#x27;光源 P(1, 3) 向水平镜面 A(a, 0) 发射光束，严格遵守“入射角 = 反射角”，观察光脉冲等距传播至 Q(2a − 1, 3)。&#x27;,
+          geoLabel: &#x27;显示全等三角形 (ASA)&#x27;,
+          pulseLabel: &#x27;⚡ 发射光脉冲&#x27;,
+          presets: [
+            { label: &#x27;常规 A(3, 0)&#x27;, a: 3 },
+            { label: &#x27;垂直入射 A(1, 0)&#x27;, a: 1 },
+            { label: &#x27;左侧反射 A(-1.5, 0)&#x27;, a: -1.5 },
+            { label: &#x27;右端点 A(5, 0)&#x27;, a: 5 }
+          ]
+        },
+        {
+          desc: &#x27;拖动 A 或点击“自动扫描”，当 ∠PAQ = 90° 且 AP = AQ 时触发金色锁相——观察两处链垂点如何关于直线 x = 1 对称。&#x27;,
+          geoLabel: &#x27;显示 x = 1 对称双光路&#x27;,
+          pulseLabel: &#x27;⚡ 发射光脉冲&#x27;,
+          presets: [
+            { label: &#x27;★ 链垂点 A₁(-2, 0)&#x27;, a: -2 },
+            { label: &#x27;★ 链垂点 A₂(4, 0)&#x27;, a: 4 },
+            { label: &#x27;初始 A(2, 0)&#x27;, a: 2 },
+            { label: &#x27;左端点 A(-3, 0)&#x27;, a: -3 }
+          ]
+        },
+        {
+          desc: &#x27;点击“光子竞速”，同时从 P(1, 3) 发射两颗同速光子：青色沿镜像最短路径，橙色沿你选的 A(a, 0) 路径，看谁先到 R(r, 3)！&#x27;,
+          geoLabel: &#x27;显示镜像点 P′(1, −3) 与直线 P′R&#x27;,
+          pulseLabel: &#x27;🏁 发射光子竞速&#x27;,
+          presets: [
+            { label: &#x27;★ R(7, 3) 链垂点对比&#x27;, a: 1, r: 7 },
+            { label: &#x27;★ R(-5, 3) 链垂点对比&#x27;, a: 0.5, r: -5 },
+            { label: &#x27;R(7, 3) 最佳重合 A(4, 0)&#x27;, a: 4, r: 7 },
+            { label: &#x27;垂直入射特例 R(1, 3)&#x27;, a: 3, r: 1 }
+          ]
+        }
+      ];
+
+      function renderPresets() {
+        const row = document.getElementById(&#x27;presetsRow&#x27;);
+        row.innerHTML = &#x27;&#x27;;
+        const cfg = stageConfigs[state.stage];
+        const title = document.createElement(&#x27;span&#x27;);
+        title.style.fontSize = &#x27;0.78rem&#x27;;
+        title.style.color = &#x27;#8ea9cc&#x27;;
+        title.textContent = &#x27;快捷演示位置：&#x27;;
+        row.appendChild(title);
+
+        cfg.presets.forEach(p =&gt; {
+          const b = document.createElement(&#x27;button&#x27;);
+          b.type = &#x27;button&#x27;;
+          b.className = &#x27;btn preset&#x27;;
+          b.textContent = p.label;
+          b.addEventListener(&#x27;click&#x27;, () =&gt; {
+            state.playing = false;
+            updatePlayBtn();
+            state.a = p.a;
+            if (typeof p.r === &#x27;number&#x27;) state.r = p.r;
+            state.race = null;
+            syncSliders();
+            updateUI();
+            emitPulse();
+          });
+          row.appendChild(b);
+        });
+      }
+
+      function setStage(idx) {
+        state.stage = idx;
+        state.playing = false;
+        state.pulses = [];
+        state.race = null;
+        if (idx === 0) { state.a = 3; }
+        else if (idx === 1) { state.a = 2; }
+        else { state.a = 1; state.r = 7; }
+
+        document.querySelectorAll(&#x27;.tab-btn&#x27;).forEach(b =&gt; {
+          b.classList.toggle(&#x27;active&#x27;, Number(b.dataset.stage) === idx);
+        });
+        const cfg = stageConfigs[idx];
+        document.getElementById(&#x27;stageDesc&#x27;).textContent = cfg.desc;
+        document.getElementById(&#x27;geoToggleLabel&#x27;).textContent = cfg.geoLabel;
+        document.getElementById(&#x27;btnPulse&#x27;).textContent = cfg.pulseLabel;
+        document.getElementById(&#x27;sliderRBox&#x27;).classList.toggle(&#x27;hidden&#x27;, idx !== 2);
+
+        renderPresets();
+        syncSliders();
+        updatePlayBtn();
+        updateUI();
+        emitPulse();
+      }
+
+      function syncSliders() {
+        document.getElementById(&#x27;sliderA&#x27;).value = state.a;
+        document.getElementById(&#x27;valA&#x27;).textContent = fmt(state.a);
+        document.getElementById(&#x27;sliderR&#x27;).value = state.r;
+        document.getElementById(&#x27;valR&#x27;).textContent = fmt(state.r);
+      }
+
+      function updatePlayBtn() {
+        document.getElementById(&#x27;btnPlay&#x27;).textContent = state.playing ? &#x27;⏸ 暂停扫描&#x27; : &#x27;▶ 自动扫描&#x27;;
+      }
+
+      function updateUI() {
+        const pill = document.getElementById(&#x27;statusPill&#x27;);
+        const mL1 = document.getElementById(&#x27;mLabel1&#x27;);
+        const mV1 = document.getElementById(&#x27;mVal1&#x27;);
+        const mL2 = document.getElementById(&#x27;mLabel2&#x27;);
+        const mV2 = document.getElementById(&#x27;mVal2&#x27;);
+        const mL3 = document.getElementById(&#x27;mLabel3&#x27;);
+        const mV3 = document.getElementById(&#x27;mVal3&#x27;);
+        const mL4 = document.getElementById(&#x27;mLabel4&#x27;);
+        const mV4 = document.getElementById(&#x27;mVal4&#x27;);
+        const mL5 = document.getElementById(&#x27;mLabel5&#x27;);
+        const mV5 = document.getElementById(&#x27;mVal5&#x27;);
+
+        if (state.stage === 0 || state.stage === 1) {
+          const qx = 2 * state.a - 1;
+          const ap = dist(1, 3, state.a, 0);
+          const aq = dist(state.a, 0, qx, 3);
+          const incDeg = Math.atan2(Math.abs(state.a - 1), 3) * 180 / Math.PI;
+          const paqDeg = 2 * incDeg;
+          const isPerp = Math.abs(state.a - 1) &lt; 0.03;
+          const isChain = Math.abs(Math.abs(state.a - 1) - 3) &lt; 0.06;
+
+          mL1.textContent = &#x27;镜面光斑 A(a, 0)&#x27;;
+          mV1.textContent = `(${fmt(state.a)}, 0)`;
+          mL2.textContent = &#x27;反射交点 Q(2a−1, 3)&#x27;;
+          mV2.textContent = `(${fmt(qx)}, 3)`;
+          mL3.textContent = &#x27;入射角 / 反射角&#x27;;
+          mV3.textContent = `${fmt(incDeg, 1)}° / ${fmt(incDeg, 1)}°`;
+          mL4.textContent = &#x27;光程 AP / AQ&#x27;;
+          mV4.textContent = `${fmt(ap)} / ${fmt(aq)}`;
+          mL5.textContent = &#x27;夹角 ∠PAQ&#x27;;
+          mV5.textContent = `${fmt(paqDeg, 1)}°`;
+
+          pill.className = &#x27;status-pill&#x27;;
+          if (isChain) {
+            pill.classList.add(&#x27;gold&#x27;);
+            pill.textContent = `★ 锁定链垂点！∠PAQ = 90°，AP = AQ = ${fmt(ap)}`;
+          } else if (isPerp) {
+            pill.classList.add(&#x27;violet&#x27;);
+            pill.textContent = &#x27;垂直入射特例：入射角 = 反射角 = 0°，Q 与 P 重合&#x27;;
+          } else {
+            pill.textContent = state.stage === 0
+              ? &#x27;反射定律成立：AP = AQ，△PAM ≅ △QAM (ASA)&#x27;
+              : &#x27;拖动 A 寻找 ∠PAQ = 90° 的链垂点位置&#x27;;
+          }
+        } else {
+          const aOpt = (1 + state.r) / 2;
+          const pa = dist(1, 3, state.a, 0);
+          const ar = dist(state.a, 0, state.r, 3);
+          const total = pa + ar;
+          const minLen = dist(1, -3, state.r, 3);
+          const diff = Math.max(0, total - minLen);
+          const isOpt = Math.abs(state.a - aOpt) &lt; 0.06;
+          const isChainR = Math.abs(Math.abs(state.r - 1) - 6) &lt; 0.08;
+          const isPerpR = Math.abs(state.r - 1) &lt; 0.05;
+
+          mL1.textContent = &#x27;试验点 A / 最佳点 A*&#x27;;
+          mV1.textContent = `(${fmt(state.a)},0) / (${fmt(aOpt)},0)`;
+          mL2.textContent = &#x27;接收点 R(r, 3)&#x27;;
+          mV2.textContent = `(${fmt(state.r)}, 3)`;
+          mL3.textContent = &#x27;当前折线 PA + AR&#x27;;
+          mV3.textContent = fmt(total, 3);
+          mL4.textContent = &#x27;最短光程 P′R&#x27;;
+          mV4.textContent = fmt(minLen, 3);
+          mL5.textContent = &#x27;多走的路程差&#x27;;
+          mV5.textContent = `+${fmt(diff, 3)}`;
+
+          pill.className = &#x27;status-pill&#x27;;
+          if (state.race &amp;&amp; state.race.winner) {
+            pill.classList.add(&#x27;gold&#x27;);
+            pill.textContent = state.race.winner === &#x27;tie&#x27;
+              ? &#x27;🏁 平局！当前 A 恰为费马最短反射点 A*&#x27;
+              : `🏁 青色最短路径光子率先抵达！（领先 ${fmt(diff, 2)} 单位）`;
+          } else if (isOpt &amp;&amp; isChainR) {
+            pill.classList.add(&#x27;gold&#x27;);
+            pill.textContent = &#x27;★ 最短光程 + 90° 链垂点同时满足！&#x27;;
+          } else if (isPerpR) {
+            pill.classList.add(&#x27;violet&#x27;);
+            pill.textContent = &#x27;特例 r = 1：最短光程 = 6（垂直入射，非链垂点）&#x27;;
+          } else if (isOpt) {
+            pill.textContent = &#x27;✓ 已对齐最短光程反射点 A* = ((1+r)/2, 0)&#x27;;
+          } else {
+            pill.textContent = &#x27;拖动 A 逼近 A*，或点击“发射光子竞速”直观对比&#x27;;
+          }
+        }
+      }
+
+      // Drawing helpers
+      function drawGrid() {
+        ctx.save();
+        ctx.lineWidth = 1;
+        for (let x = -6; x &lt;= 9; x++) {
+          const p = toScreen(x, 0);
+          ctx.strokeStyle = x === 0 ? &#x27;rgba(148, 197, 255, 0.34)&#x27; : &#x27;rgba(148, 197, 255, 0.08)&#x27;;
+          ctx.beginPath();
+          ctx.moveTo(p.x, 0);
+          ctx.lineTo(p.x, view.height);
+          ctx.stroke();
+
+          if (x !== 0) {
+            const pLbl = toScreen(x, 0);
+            ctx.fillStyle = &#x27;rgba(142, 169, 204, 0.65)&#x27;;
+            ctx.font = &#x27;11px Inter, sans-serif&#x27;;
+            ctx.textAlign = &#x27;center&#x27;;
+            ctx.fillText(String(x), pLbl.x, pLbl.y + 18);
+          }
+        }
+        for (let y = -4; y &lt;= 4; y++) {
+          const p = toScreen(0, y);
+          ctx.strokeStyle = y === 0 ? &#x27;rgba(148, 197, 255, 0.34)&#x27; : &#x27;rgba(148, 197, 255, 0.08)&#x27;;
+          ctx.beginPath();
+          ctx.moveTo(0, p.y);
+          ctx.lineTo(view.width, p.y);
+          ctx.stroke();
+
+          if (y !== 0) {
+            ctx.fillStyle = &#x27;rgba(142, 169, 204, 0.65)&#x27;;
+            ctx.font = &#x27;11px Inter, sans-serif&#x27;;
+            ctx.textAlign = &#x27;right&#x27;;
+            ctx.fillText(String(y), p.x - 7, p.y + 4);
+          }
+        }
+
+        // Axes labels
+        const origin = toScreen(0, 0);
+        ctx.fillStyle = &#x27;rgba(142, 169, 204, 0.85)&#x27;;
+        ctx.font = &#x27;bold 12px Inter, sans-serif&#x27;;
+        ctx.textAlign = &#x27;right&#x27;;
+        ctx.fillText(&#x27;O&#x27;, origin.x - 6, origin.y + 15);
+        ctx.fillText(&#x27;x&#x27;, view.width - 10, origin.y - 8);
+        ctx.textAlign = &#x27;left&#x27;;
+        ctx.fillText(&#x27;y&#x27;, origin.x + 8, 16);
+        ctx.restore();
+      }
+
+      function drawMirrorAndScreen() {
+        ctx.save();
+        // Receiving screen y = 3
+        const sL = toScreen(WORLD_X_MIN, 3);
+        const sR = toScreen(WORLD_X_MAX, 3);
+        ctx.strokeStyle = &#x27;rgba(52, 224, 161, 0.48)&#x27;;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([7, 5]);
+        ctx.beginPath();
+        ctx.moveTo(sL.x, sL.y);
+        ctx.lineTo(sR.x, sR.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = &#x27;rgba(52, 224, 161, 0.85)&#x27;;
+        ctx.font = &#x27;600 12px Inter, sans-serif&#x27;;
+        ctx.textAlign = &#x27;right&#x27;;
+        ctx.fillText(&#x27;接收屏 ℓ : y = 3&#x27;, view.width - 14, sL.y - 8);
+
+        // Plane mirror m: x in [-3, 5], y = 0
+        const mL = toScreen(-3, 0);
+        const mR = toScreen(5, 0);
+
+        // Specular glow underneath
+        const grad = ctx.createLinearGradient(mL.x, mL.y - 3, mL.x, mL.y + 12);
+        grad.addColorStop(0, &#x27;#9beeff&#x27;);
+        grad.addColorStop(0.35, &#x27;#38bdf8&#x27;);
+        grad.addColorStop(1, &#x27;rgba(56, 189, 248, 0.08)&#x27;);
+        ctx.fillStyle = grad;
+        ctx.fillRect(mL.x, mL.y, mR.x - mL.x, 9);
+
+        // Reflective top edge
+        ctx.strokeStyle = &#x27;#d8f8ff&#x27;;
+        ctx.lineWidth = 3.2;
+        ctx.shadowColor = &#x27;#38e8ff&#x27;;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.moveTo(mL.x, mL.y);
+        ctx.lineTo(mR.x, mR.y);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Classic mirror hatch lines
+        ctx.strokeStyle = &#x27;rgba(148, 210, 255, 0.45)&#x27;;
+        ctx.lineWidth = 1.2;
+        const step = 11;
+        for (let x = mL.x + 4; x &lt;= mR.x; x += step) {
+          ctx.beginPath();
+          ctx.moveTo(x, mL.y + 2);
+          ctx.lineTo(x - 6, mL.y + 10);
+          ctx.stroke();
+        }
+
+        // Mirror endpoints &amp; label
+        ctx.fillStyle = &#x27;#9beeff&#x27;;
+        ctx.font = &#x27;600 12px Inter, sans-serif&#x27;;
+        ctx.textAlign = &#x27;left&#x27;;
+        ctx.fillText(&#x27;平面镜 m (−3 ≤ x ≤ 5)&#x27;, mL.x, mL.y + 26);
+        ctx.restore();
+      }
+
+      function drawGlowingLine(p1, p2, color, width, dash, glow) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = &#x27;round&#x27;;
+        if (dash) ctx.setLineDash(dash);
+        if (glow) {
+          ctx.shadowColor = color;
+          ctx.shadowBlur = glow;
+        }
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawArrowHead(p1, p2, t, color) {
+        const x = p1.x + (p2.x - p1.x) * t;
+        const y = p1.y + (p2.y - p1.y) * t;
+        const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        const len = 9;
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - len * Math.cos(ang - 0.42), y - len * Math.sin(ang - 0.42));
+        ctx.lineTo(x - len * Math.cos(ang + 0.42), y - len * Math.sin(ang + 0.42));
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawPoint(p, radius, color, label, dx, dy, pulsePhase) {
+        ctx.save();
+        if (pulsePhase !== undefined) {
+          const rOuter = radius + 5 + Math.sin(pulsePhase) * 2.5;
+          ctx.strokeStyle = color;
+          ctx.globalAlpha = 0.35;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, rOuter, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.strokeStyle = &#x27;#ffffff&#x27;;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+
+        if (label) {
+          ctx.font = &#x27;700 12px Inter, sans-serif&#x27;;
+          ctx.fillStyle = &#x27;#f2f7ff&#x27;;
+          ctx.textAlign = dx &lt; 0 ? &#x27;right&#x27; : dx === 0 ? &#x27;center&#x27; : &#x27;left&#x27;;
+          ctx.fillText(label, p.x + dx, p.y + dy);
+        }
+        ctx.restore();
+      }
+
+      function drawRightAngleSquare(vertex, u1, u2, size, color) {
+        const p1 = { x: vertex.x + u1.x * size, y: vertex.y + u1.y * size };
+        const p2 = { x: vertex.x + (u1.x + u2.x) * size, y: vertex.y + (u1.y + u2.y) * size };
+        const p3 = { x: vertex.x + u2.x * size, y: vertex.y + u2.y * size };
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.lineTo(p3.x, p3.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawPhoton(p, color) {
+        ctx.save();
+        const grad = ctx.createRadialGradient(p.x, p.y, 1, p.x, p.y, 13);
+        grad.addColorStop(0, &#x27;#ffffff&#x27;);
+        grad.addColorStop(0.35, color);
+        grad.addColorStop(1, &#x27;rgba(0,0,0,0)&#x27;);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 13, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawContinuousPhotons(p1, p2, color, speedOffset) {
+        const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        if (d &lt; 4) return;
+        const spacing = 54;
+        const offset = (state.time * 75 + speedOffset) % spacing;
+        ctx.save();
+        for (let s = offset; s &lt; d; s += spacing) {
+          const t = s / d;
+          const x = p1.x + (p2.x - p1.x) * t;
+          const y = p1.y + (p2.y - p1.y) * t;
+          ctx.fillStyle = &#x27;#ffffff&#x27;;
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(x, y, 2.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawStage0And1() {
+        const P = toScreen(1, 3);
+        const A = toScreen(state.a, 0);
+        const qx = 2 * state.a - 1;
+        const Q = toScreen(qx, 3);
+        const M = toScreen(state.a, 3);
+        const isPerp = Math.abs(state.a - 1) &lt; 0.03;
+        const isChain = Math.abs(Math.abs(state.a - 1) - 3) &lt; 0.06;
+
+        // Auxiliary geometry overlays
+        if (state.showGeo) {
+          if (state.stage === 0 &amp;&amp; !isPerp) {
+            // Fill congruent triangles Rt△PAM &amp; Rt△QAM
+            ctx.save();
+            ctx.fillStyle = &#x27;rgba(255, 170, 59, 0.10)&#x27;;
+            ctx.beginPath();
+            ctx.moveTo(P.x, P.y); ctx.lineTo(A.x, A.y); ctx.lineTo(M.x, M.y);
+            ctx.closePath(); ctx.fill();
+
+            ctx.fillStyle = &#x27;rgba(52, 224, 161, 0.10)&#x27;;
+            ctx.beginPath();
+            ctx.moveTo(Q.x, Q.y); ctx.lineTo(A.x, A.y); ctx.lineTo(M.x, M.y);
+            ctx.closePath(); ctx.fill();
+            ctx.restore();
+          }
+
+          if (state.stage === 1) {
+            // Draw symmetry axis x = 1 and ghost twin 45° solutions
+            const axisTop = toScreen(1, 4.5);
+            const axisBot = toScreen(1, -1.2);
+            drawGlowingLine(axisTop, axisBot, &#x27;rgba(183, 132, 255, 0.55)&#x27;, 1.5, [6, 5], 0);
+            ctx.save();
+            ctx.fillStyle = &#x27;rgba(183, 132, 255, 0.9)&#x27;;
+            ctx.font = &#x27;600 11px Inter, sans-serif&#x27;;
+            ctx.textAlign = &#x27;left&#x27;;
+            ctx.fillText(&#x27;对称轴 x = 1&#x27;, axisTop.x + 6, axisTop.y + 10);
+            ctx.restore();
+
+            const H = toScreen(1, 0);
+            const A1 = toScreen(-2, 0), Q1 = toScreen(-5, 3);
+            const A2 = toScreen(4, 0), Q2 = toScreen(7, 3);
+            drawGlowingLine(P, A1, &#x27;rgba(183, 132, 255, 0.35)&#x27;, 1.6, [4, 4], 0);
+            drawGlowingLine(A1, Q1, &#x27;rgba(183, 132, 255, 0.35)&#x27;, 1.6, [4, 4], 0);
+            drawGlowingLine(P, A2, &#x27;rgba(183, 132, 255, 0.35)&#x27;, 1.6, [4, 4], 0);
+            drawGlowingLine(A2, Q2, &#x27;rgba(183, 132, 255, 0.35)&#x27;, 1.6, [4, 4], 0);
+            drawPoint(H, 4, &#x27;#b784ff&#x27;, &#x27;H(1,0)&#x27;, 6, 16);
+            drawPoint(A1, 4.5, &#x27;rgba(255, 212, 82, 0.8)&#x27;, &#x27;A₁(-2,0)&#x27;, 0, 22);
+            drawPoint(A2, 4.5, &#x27;rgba(255, 212, 82, 0.8)&#x27;, &#x27;A₂(4,0)&#x27;, 0, 22);
+          }
+        }
+
+        // Normal line AM
+        if (state.showNormal) {
+          const nTop = toScreen(state.a, 4.1);
+          drawGlowingLine(A, nTop, &#x27;rgba(56, 232, 255, 0.55)&#x27;, 1.6, [5, 5], 0);
+          ctx.save();
+          ctx.fillStyle = &#x27;rgba(56, 232, 255, 0.85)&#x27;;
+          ctx.font = &#x27;600 11px Inter, sans-serif&#x27;;
+          ctx.textAlign = &#x27;left&#x27;;
+          ctx.fillText(`法线 x=${fmt(state.a, 1)}`, M.x + 6, M.y - 10);
+          ctx.restore();
+
+          if (!isPerp) {
+            // Right angle at M
+            const dirMP = state.a &gt; 1 ? -1 : 1;
+            drawRightAngleSquare(M, { x: dirMP, y: 0 }, { x: 0, y: 1 }, 9, &#x27;rgba(56, 232, 255, 0.7)&#x27;);
+
+            // Incident &amp; reflected angle arcs at A
+            const rArc = 34;
+            const angNorm = -Math.PI / 2;
+            const angP = Math.atan2(P.y - A.y, P.x - A.x);
+            const angQ = Math.atan2(Q.y - A.y, Q.x - A.x);
+            ctx.save();
+            ctx.lineWidth = 2.2;
+            ctx.strokeStyle = &#x27;#ffaa3b&#x27;;
+            ctx.beginPath();
+            ctx.arc(A.x, A.y, rArc, Math.min(angNorm, angP), Math.max(angNorm, angP));
+            ctx.stroke();
+
+            ctx.strokeStyle = &#x27;#34e0a1&#x27;;
+            ctx.beginPath();
+            ctx.arc(A.x, A.y, rArc + 4, Math.min(angNorm, angQ), Math.max(angNorm, angQ));
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        // 90° right-angle highlight when Chain-Perpendicular Point is reached!
+        if (isChain) {
+          const vP = { x: P.x - A.x, y: P.y - A.y };
+          const lP = Math.hypot(vP.x, vP.y);
+          const vQ = { x: Q.x - A.x, y: Q.y - A.y };
+          const lQ = Math.hypot(vQ.x, vQ.y);
+          drawRightAngleSquare(
+            A,
+            { x: vP.x / lP, y: vP.y / lP },
+            { x: vQ.x / lQ, y: vQ.y / lQ },
+            15,
+            &#x27;#ffd452&#x27;
+          );
+        }
+
+        // Main incident &amp; reflected laser beams
+        drawGlowingLine(P, A, &#x27;#ffaa3b&#x27;, 3.2, null, 12);
+        drawGlowingLine(A, Q, isChain ? &#x27;#ffd452&#x27; : &#x27;#34e0a1&#x27;, 3.2, null, 12);
+
+        // Direction arrows
+        if (!isPerp) {
+          drawArrowHead(P, A, 0.52, &#x27;#ffaa3b&#x27;);
+          drawArrowHead(A, Q, 0.52, isChain ? &#x27;#ffd452&#x27; : &#x27;#34e0a1&#x27;);
+        }
+
+        // Continuous photon stream
+        drawContinuousPhotons(P, A, &#x27;#ffaa3b&#x27;, 0);
+        drawContinuousPhotons(A, Q, isChain ? &#x27;#ffd452&#x27; : &#x27;#34e0a1&#x27;, 27);
+
+        // Single emitted pulses
+        state.pulses.forEach(pl =&gt; {
+          if (pl.distTraveled &lt;= pl.d1) {
+            const t = pl.d1 &gt; 0 ? pl.distTraveled / pl.d1 : 1;
+            const pos = { x: P.x + (A.x - P.x) * t, y: P.y + (A.y - P.y) * t };
+            drawPhoton(pos, &#x27;#ffaa3b&#x27;);
+          } else {
+            const t = (pl.distTraveled - pl.d1) / Math.max(0.001, pl.total - pl.d1);
+            const pos = { x: A.x + (Q.x - A.x) * t, y: A.y + (Q.y - A.y) * t };
+            drawPhoton(pos, isChain ? &#x27;#ffd452&#x27; : &#x27;#34e0a1&#x27;);
+          }
+        });
+
+        // Mirror impact flash
+        if (state.mirrorFlash &gt; 0) {
+          ctx.save();
+          ctx.strokeStyle = `rgba(255, 212, 82, ${state.mirrorFlash})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(A.x, A.y, 10 + (1 - state.mirrorFlash) * 26, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Key points
+        drawPoint(P, 6.5, &#x27;#38e8ff&#x27;, &#x27;P(1, 3)&#x27;, -12, -12, state.time * 3);
+        if (!isPerp) {
+          drawPoint(Q, 6.5, isChain ? &#x27;#ffd452&#x27; : &#x27;#34e0a1&#x27;, `Q(${fmt(qx, 1)}, 3)`, 12, -12);
+        }
+        drawPoint(A, 8, &#x27;#ffaa3b&#x27;, `A(${fmt(state.a, 1)}, 0)`, 0, 22, state.dragging === &#x27;a&#x27; ? state.time * 6 : undefined);
+      }
+
+      function drawStage2() {
+        const P = toScreen(1, 3);
+        const Pimg = toScreen(1, -3);
+        const H = toScreen(1, 0);
+        const R = toScreen(state.r, 3);
+        const A = toScreen(state.a, 0);
+        const aOpt = (1 + state.r) / 2;
+        const Aopt = toScreen(aOpt, 0);
+        const isOpt = Math.abs(state.a - aOpt) &lt; 0.06;
+        const isChainR = Math.abs(Math.abs(state.r - 1) - 6) &lt; 0.08;
+
+        // Virtual image P&#x27;(1, -3) &amp; straight line P&#x27;R
+        if (state.showGeo) {
+          drawGlowingLine(P, Pimg, &#x27;rgba(183, 132, 255, 0.45)&#x27;, 1.5, [4, 4], 0);
+          drawGlowingLine(Pimg, Aopt, &#x27;rgba(56, 232, 255, 0.65)&#x27;, 2.0, [6, 5], 6);
+          drawGlowingLine(Pimg, A, &#x27;rgba(255, 170, 59, 0.45)&#x27;, 1.6, [5, 5], 0);
+          drawPoint(H, 4, &#x27;#b784ff&#x27;, &#x27;H(1,0)&#x27;, -8, 16);
+          drawPoint(Pimg, 6, &#x27;#b784ff&#x27;, &#x27;镜像 P′(1, −3)&#x27;, 10, 5);
+        }
+
+        // Normal at optimal point A*
+        if (state.showNormal) {
+          const mTop = toScreen(aOpt, 4.1);
+          drawGlowingLine(Aopt, mTop, &#x27;rgba(56, 232, 255, 0.48)&#x27;, 1.5, [5, 5], 0);
+        }
+
+        // Optimal Fermat path (Cyan)
+        drawGlowingLine(P, Aopt, &#x27;#38e8ff&#x27;, 2.8, null, 10);
+        drawGlowingLine(Aopt, R, &#x27;#38e8ff&#x27;, 2.8, null, 10);
+        drawArrowHead(P, Aopt, 0.5, &#x27;#38e8ff&#x27;);
+        drawArrowHead(Aopt, R, 0.5, &#x27;#38e8ff&#x27;);
+
+        // Trial path P -&gt; A -&gt; R (Amber, dashed if distinct)
+        if (!isOpt) {
+          drawGlowingLine(P, A, &#x27;#ffaa3b&#x27;, 2.6, [8, 5], 6);
+          drawGlowingLine(A, R, &#x27;#ffaa3b&#x27;, 2.6, [8, 5], 6);
+        }
+
+        // 90° marker if optimal path is also a chain-perpendicular point
+        if (isChainR) {
+          const vP = { x: P.x - Aopt.x, y: P.y - Aopt.y };
+          const lP = Math.hypot(vP.x, vP.y);
+          const vR = { x: R.x - Aopt.x, y: R.y - Aopt.y };
+          const lR = Math.hypot(vR.x, vR.y);
+          drawRightAngleSquare(
+            Aopt,
+            { x: vP.x / lP, y: vP.y / lP },
+            { x: vR.x / lR, y: vR.y / lR },
+            14,
+            &#x27;#ffd452&#x27;
+          );
+        }
+
+        // Photon Race animation!
+        if (state.race) {
+          const rc = state.race;
+          const distNow = rc.t * rc.speedWorld;
+
+          // Optimal cyan photon
+          const dOpt1 = dist(1, 3, rc.aOpt, 0);
+          const dOpt2 = dist(rc.aOpt, 0, rc.r, 3);
+          const AoptS = toScreen(rc.aOpt, 0);
+          const RS = toScreen(rc.r, 3);
+          const pOpt = distNow &lt;= dOpt1
+            ? { x: P.x + (AoptS.x - P.x) * (distNow / Math.max(0.001, dOpt1)), y: P.y + (AoptS.y - P.y) * (distNow / Math.max(0.001, dOpt1)) }
+            : { x: AoptS.x + (RS.x - AoptS.x) * Math.min(1, (distNow - dOpt1) / Math.max(0.001, dOpt2)), y: AoptS.y + (RS.y - AoptS.y) * Math.min(1, (distNow - dOpt1) / Math.max(0.001, dOpt2)) };
+          drawPhoton(pOpt, &#x27;#38e8ff&#x27;);
+
+          // Trial amber photon
+          const dTr1 = dist(1, 3, rc.aTrial, 0);
+          const dTr2 = dist(rc.aTrial, 0, rc.r, 3);
+          const AtrS = toScreen(rc.aTrial, 0);
+          const pTr = distNow &lt;= dTr1
+            ? { x: P.x + (AtrS.x - P.x) * (distNow / Math.max(0.001, dTr1)), y: P.y + (AtrS.y - P.y) * (distNow / Math.max(0.001, dTr1)) }
+            : { x: AtrS.x + (RS.x - AtrS.x) * Math.min(1, (distNow - dTr1) / Math.max(0.001, dTr2)), y: AtrS.y + (RS.y - AtrS.y) * Math.min(1, (distNow - dTr1) / Math.max(0.001, dTr2)) };
+          drawPhoton(pTr, &#x27;#ffaa3b&#x27;);
+        } else {
+          drawContinuousPhotons(P, Aopt, &#x27;#38e8ff&#x27;, 0);
+          drawContinuousPhotons(Aopt, R, &#x27;#38e8ff&#x27;, 27);
+        }
+
+        // Arrival flash at R
+        if (state.hitFlash &gt; 0) {
+          ctx.save();
+          ctx.strokeStyle = `rgba(56, 232, 255, ${state.hitFlash})`;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(R.x, R.y, 10 + (1 - state.hitFlash) * 30, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Key points
+        drawPoint(P, 6.5, &#x27;#38e8ff&#x27;, &#x27;P(1, 3)&#x27;, -12, -12, state.time * 3);
+        drawPoint(Aopt, 6, &#x27;#38e8ff&#x27;, `最佳 A*(${fmt(aOpt, 1)}, 0)`, 0, -14);
+        drawPoint(A, 8, &#x27;#ffaa3b&#x27;, `试验 A(${fmt(state.a, 1)}, 0)`, 0, 22);
+        drawPoint(R, 8, isChainR ? &#x27;#ffd452&#x27; : &#x27;#34e0a1&#x27;, `R(${fmt(state.r, 1)}, 3)`, 12, -12);
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, view.width, view.height);
+        drawGrid();
+        drawMirrorAndScreen();
+        if (state.stage === 2) drawStage2();
+        else drawStage0And1();
+      }
+
+      // Main animation loop
+      let lastTs = 0;
+      function tick(ts) {
+        if (!lastTs) lastTs = ts;
+        const dt = Math.min(0.05, (ts - lastTs) / 1000);
+        lastTs = ts;
+        state.time += dt * state.speed;
+
+        if (state.playing) {
+          const step = dt * 1.45 * state.speed * state.sweepDir;
+          state.a += step;
+          if (state.a &gt;= 5) { state.a = 5; state.sweepDir = -1; }
+          if (state.a &lt;= -3) { state.a = -3; state.sweepDir = 1; }
+          syncSliders();
+          updateUI();
+        }
+
+        // Update single pulses
+        for (let i = state.pulses.length - 1; i &gt;= 0; i--) {
+          const pl = state.pulses[i];
+          pl.distTraveled += dt * pl.speedWorld * state.speed;
+          if (!pl.bounced &amp;&amp; pl.distTraveled &gt;= pl.d1) {
+            pl.bounced = true;
+            state.mirrorFlash = 1.0;
+          }
+          if (pl.distTraveled &gt;= pl.total) {
+            state.pulses.splice(i, 1);
+          }
+        }
+
+        // Update Stage 3 photon race
+        if (state.race) {
+          const rc = state.race;
+          rc.t += dt * state.speed;
+          const d = rc.t * rc.speedWorld;
+          if (!rc.optDone &amp;&amp; d &gt;= rc.lenOpt) {
+            rc.optDone = true;
+            state.hitFlash = 1.0;
+            if (!rc.winner) {
+              rc.winner = Math.abs(rc.lenTrial - rc.lenOpt) &lt; 0.04 ? &#x27;tie&#x27; : &#x27;opt&#x27;;
+              updateUI();
+            }
+          }
+          if (!rc.trialDone &amp;&amp; d &gt;= rc.lenTrial) {
+            rc.trialDone = true;
+          }
+          if (rc.optDone &amp;&amp; rc.trialDone &amp;&amp; d &gt;= rc.lenTrial + 2.5) {
+            state.race = null;
+          }
+        }
+
+        state.mirrorFlash = Math.max(0, state.mirrorFlash - dt * 2.4);
+        state.hitFlash = Math.max(0, state.hitFlash - dt * 2.0);
+
+        render();
+        requestAnimationFrame(tick);
+      }
+
+      // Pointer drag interactions for A and R
+      function getPointerPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      }
+
+      canvas.addEventListener(&#x27;pointerdown&#x27;, e =&gt; {
+        const pt = getPointerPos(e);
+        const A = toScreen(state.a, 0);
+        const R = toScreen(state.r, 3);
+        if (Math.hypot(pt.x - A.x, pt.y - A.y) &lt; 28) {
+          state.dragging = &#x27;a&#x27;;
+          state.playing = false;
+          state.race = null;
+          updatePlayBtn();
+          wrap.classList.add(&#x27;dragging&#x27;);
+          canvas.setPointerCapture(e.pointerId);
+        } else if (state.stage === 2 &amp;&amp; Math.hypot(pt.x - R.x, pt.y - R.y) &lt; 28) {
+          state.dragging = &#x27;r&#x27;;
+          state.playing = false;
+          state.race = null;
+          updatePlayBtn();
+          wrap.classList.add(&#x27;dragging&#x27;);
+          canvas.setPointerCapture(e.pointerId);
+        }
+      });
+
+      canvas.addEventListener(&#x27;pointermove&#x27;, e =&gt; {
+        if (!state.dragging) return;
+        const pt = getPointerPos(e);
+        const w = toWorld(pt.x, pt.y);
+        if (state.dragging === &#x27;a&#x27;) {
+          let nextA = clamp(Math.round(w.x * 20) / 20, -3, 5);
+          // Gentle magnetic snap to key integers (-2, 1, 4)
+          [-2, 1, 4].forEach(k =&gt; { if (Math.abs(nextA - k) &lt; 0.08) nextA = k; });
+          if (state.stage === 2) {
+            const aOpt = (1 + state.r) / 2;
+            if (Math.abs(nextA - aOpt) &lt; 0.08) nextA = aOpt;
+          }
+          state.a = nextA;
+        } else if (state.dragging === &#x27;r&#x27;) {
+          let nextR = clamp(Math.round(w.x * 20) / 20, -5, 9);
+          [-5, 1, 7].forEach(k =&gt; { if (Math.abs(nextR - k) &lt; 0.1) nextR = k; });
+          state.r = nextR;
+        }
+        syncSliders();
+        updateUI();
+      });
+
+      function endDrag() {
+        state.dragging = null;
+        wrap.classList.remove(&#x27;dragging&#x27;);
+      }
+      canvas.addEventListener(&#x27;pointerup&#x27;, endDrag);
+      canvas.addEventListener(&#x27;pointercancel&#x27;, endDrag);
+
+      // UI event bindings
+      document.querySelectorAll(&#x27;.tab-btn&#x27;).forEach(btn =&gt; {
+        btn.addEventListener(&#x27;click&#x27;, () =&gt; setStage(Number(btn.dataset.stage)));
+      });
+      document.getElementById(&#x27;btnPlay&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+        state.playing = !state.playing;
+        state.race = null;
+        updatePlayBtn();
+      });
+      document.getElementById(&#x27;btnPulse&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; emitPulse());
+      document.getElementById(&#x27;btnReset&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; setStage(state.stage));
+      document.getElementById(&#x27;speedSel&#x27;).addEventListener(&#x27;change&#x27;, e =&gt; {
+        state.speed = Number(e.target.value);
+      });
+      document.getElementById(&#x27;chkNormal&#x27;).addEventListener(&#x27;change&#x27;, e =&gt; {
+        state.showNormal = e.target.checked;
+      });
+      document.getElementById(&#x27;chkGeo&#x27;).addEventListener(&#x27;change&#x27;, e =&gt; {
+        state.showGeo = e.target.checked;
+      });
+      document.getElementById(&#x27;sliderA&#x27;).addEventListener(&#x27;input&#x27;, e =&gt; {
+        state.playing = false;
+        state.race = null;
+        updatePlayBtn();
+        state.a = Number(e.target.value);
+        syncSliders();
+        updateUI();
+      });
+      document.getElementById(&#x27;sliderR&#x27;).addEventListener(&#x27;input&#x27;, e =&gt; {
+        state.race = null;
+        state.r = Number(e.target.value);
+        syncSliders();
+        updateUI();
+      });
+
+      window.addEventListener(&#x27;resize&#x27;, resizeCanvas);
+      window.addEventListener(&#x27;load&#x27;, () =&gt; {
+        resizeCanvas();
+        setStage(0);
+        requestAnimationFrame(tick);
+      });
+      resizeCanvas();
+      setStage(0);
+      requestAnimationFrame(tick);
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" style="width:100%;height:760px;border:0;display:block;background:#07111f"></iframe></section>
 <div class="bottom"><div class="teacherlocked" id="lockMessage"><div><strong>🔐 解析默认隐藏</strong><p>自己完成辅助作图和推导后，可以输入教师密码查看完整步骤。</p></div><button class="action primary" id="reveal">输入密码 · 显示解析</button></div><section class="panel answer-panel" id="answerPanel" aria-live="polite"><div class="ptitle"><h2>完整解题步骤 · 教师版</h2><button class="action" id="hideAnswer">🔒 隐藏解析</button></div><div id="answerBody" style="padding:0 20px 20px"></div></section></div>
 <div class="foot">FrankMath / ext3 · 本页仅用 HTML + SVG + JavaScript，离线可用。沿用 <a href="../q27-原题/链垂点_交互教学.html">q27-原题</a> 的“链垂点”定义，不改变原题文件。说明：前端解析密码用于课堂展示控制，不是防止查看源代码的安全措施。</div></div>
 <div class="dialog-backdrop" id="passwordDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><form class="dialog" id="passwordForm"><h2 id="dialogTitle">解锁完整解析</h2><p>需要教师密码。隐藏解析后，下次显示将重新验证。</p><input type="password" id="pass" placeholder="输入 4 位密码" inputmode="numeric" autocomplete="off" aria-label="解析密码" required><div class="error" id="passwordError" aria-live="polite"></div><div class="dialog-actions"><button type="button" class="action" id="cancelPassword">取消</button><button type="submit" class="action primary">验证并显示</button></div></form></div>
