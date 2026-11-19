@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101b3a">
+<title>第27题扩展题目2｜链垂点交互讲解</title>
+<link rel="stylesheet" href="base.css">
+</head>
+<body class="explain-off">
+<main class="page">
+<header>
+  <div class="header-row">
+    <div>
+      <h1>第27题扩展题目2 · 链垂点</h1>
+      <p>换了一个图形来巩固「绕指定点旋转 ±90°」。外围改成等腰直角三角形，点 E 可以沿着对称轴整条 y 轴移动。先自己做。做好后，打开「显示讲解」可以看步骤和结论，打开时需要密码。点「播放」后会一边放动画，一边用口语把思路讲出来。不想听时，可关「语音」，或把讲解开关关掉。</p>
+    </div>
+    <label class="explain-toggle" for="explainToggle">
+      <span>显示讲解</span>
+      <input id="explainToggle" type="checkbox" aria-label="显示或隐藏讲解内容">
+    </label>
+  </div>
+  <div class="intro">
+    <span class="pill">与第27题同一思路</span>
+    <span class="pill">讲解可开可关</span>
+    <span class="pill">播放时跟着讲</span>
+    <span class="pill">手机 / 电脑离线可用</span>
+  </div>
+</header>
+
+<section class="problem" aria-label="题目原文">
+  <h2>题目</h2>
+  <p><b>【新定义】</b>若点 Q 满足 ∠PAQ = 90° 且 AQ = AP，则称点 Q 为点 P 关于点 A 的链垂点。（也就是把点 P 绕点 A 旋转 90° 得到点 Q，顺时针、逆时针都可以。）</p>
+  <p>如图，在平面直角坐标系中，O 为原点。</p>
+  <p><b>(1)①</b> 已知点 A(2,1)，点 P(5,4)，求点 P 关于点 A 的链垂点的坐标；</p>
+  <p><b>(1)②</b> 已知点 A(1,2)，点 B(5,6) 是点 A 关于点 C 的链垂点，且点 C 在点 A 的正上方，求点 C 的坐标。</p>
+  <p><b>(2)</b> 图形 H 是顶点为 (−4,0)、(4,0)、(0,4) 的等腰直角三角形的<b>边界</b>（不含内部）。点 E 的坐标为 (0, t)。点 D 在线段 G 上运动，G 的两个端点分别为 (2,1) 和 (2,2)。若点 Q 是点 D 关于点 E 的链垂点，且点 Q 恰好落在图形 H 上，求 t 的取值范围。</p>
+</section>
+
+<div class="facts explain-only">
+  <div class="fact">
+    <b>(1)① P(5,4) 关于 A(2,1) 的链垂点</b>
+    <span>(−1,4) 或 (5,−2)</span>
+  </div>
+  <div class="fact">
+    <b>(1)② B(5,6) 为 A(1,2) 关于 C 的链垂点</b>
+    <span>C = (1,6)</span>
+  </div>
+  <div class="fact">
+    <b>(2) 三角形边界条件</b>
+    <span class="wide">t ∈ [−2, 2] ∪ [7/2, 4]</span>
+  </div>
+</div>
+
+<div class="tabs" role="tablist" aria-label="选择题目">
+  <button id="tab0" class="tab" role="tab" aria-selected="true" type="button">(1)① 旋转坐标</button>
+  <button id="tab1" class="tab" role="tab" aria-selected="false" type="button">(1)② 反求中心</button>
+  <button id="tab2" class="tab" role="tab" aria-selected="false" type="button">(2) 动点范围</button>
+</div>
+
+<div class="layout">
+  <section class="panel" aria-label="动态坐标图和播放控制">
+    <div class="panel-title">
+      <div>
+        <div class="eyebrow">动态坐标图</div>
+        <h2 id="canvasTitle">以 A 为中心，旋转点 P</h2>
+      </div>
+      <span id="graphTag" class="number">图 1</span>
+    </div>
+    <div class="diagram-area">
+      <canvas id="graph" width="660" height="660" aria-label="交互坐标系，可用播放控制、步骤按钮、滑块和拖拽观察旋转与边界">您的浏览器需要支持 Canvas 才能显示坐标图。</canvas>
+      <div class="legend">
+        <span><i class="key" style="background:#2563eb"></i>给定点</span>
+        <span><i class="key" style="background:#e45b4c"></i>旋转中心</span>
+        <span><i class="key" style="background:#0a9a72"></i>链垂点</span>
+        <span><i class="key" style="background:#7b45ce"></i>动点 D / 线段 G</span>
+      </div>
+      <div id="narration" class="narration explain-only" aria-live="polite"></div>
+    </div>
+    <div class="playbox">
+      <div class="controls">
+        <button id="prev" class="action" type="button" title="上一步">⏮ 上一步</button>
+        <button id="play" class="action main" type="button">▶ 播放</button>
+        <button id="next" class="action" type="button" title="下一步">下一步 ⏭</button>
+        <button id="restart" class="action" type="button" title="从头开始">↺ 重播</button>
+        <label class="subtle" for="speed">速度</label>
+        <select id="speed" aria-label="播放速度" style="border-radius:9px;border:1px solid #cbd9ec;padding:8px;background:white;color:#253654">
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.5">1.5×</option>
+          <option value="2">2×</option>
+        </select>
+        <button id="voiceBtn" class="action" type="button" aria-pressed="true" title="播放时朗读讲解">🔊 语音开</button>
+      </div>
+      <div class="time-row">
+        <label for="time">讲解进度</label>
+        <input id="time" type="range" min="0" max="1000" value="0" aria-label="拖动动画时间轴">
+        <span id="stepCount" class="step-count">1 / 5</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="right-col">
+    <section class="panel section-pad explain-only">
+      <div class="subhead">当前讲解步骤</div>
+      <div class="step-header">
+        <h2 id="stepTitle">先分清谁绕着谁转</h2>
+        <span id="stepBadge" class="number">步骤 1 / 5</span>
+      </div>
+      <p id="stepDesc" class="explanation"></p>
+      <div id="stepFormula" class="equations"></div>
+      <div id="stepChips" class="steps" aria-label="可直接跳转到指定讲解步骤"></div>
+    </section>
+
+    <section class="panel section-pad explain-only">
+      <div class="subhead">本题结论</div>
+      <div class="answer">
+        <strong id="answerText">(1)①</strong>
+        <span id="answerValue" class="math">(−1,4) 或 (5,−2)</span>
+      </div>
+      <p id="answerNote" class="subtle" style="margin:10px 0 0"></p>
+    </section>
+
+    <section id="explore" class="panel explore hidden">
+      <div class="section-pad">
+        <div class="subhead">自由探索 / 实时验算</div>
+        <h2 style="margin:0 0 4px;font-size:1.15rem">拖动 E 和 D，观察 Q</h2>
+        <p class="subtle" style="margin:0">直接在坐标图中拖动紫色 D 或红色 E，也可以使用下方滑块。<br>蓝色图形 H 是等腰直角三角形的<b>边界</b>：底边在 x 轴上，从 (−4,0) 到 (4,0)；两腰分别连到 (0,4)。只有绿色点 Q <b>落在边界</b>时才满足题目。</p>
+        <label class="range-label" for="tRange">
+          <span>E = (0, t)，t 可正可负，E 在整条 y 轴上</span>
+          <output id="tOutput">−2</output>
+        </label>
+        <input id="tRange" class="fullslider" type="range" min="-5" max="6" step="0.05" value="-2" aria-label="拖动 t 的取值">
+        <div class="mode-row" role="group" aria-label="点 D 的位置模式">
+          <button id="modeAuto" class="choice selected" type="button">✓ 自动找到合适的 D</button>
+          <button id="modeManual" class="choice" type="button">手动拖动 D</button>
+        </div>
+        <label class="range-label" for="sRange">
+          <span>D = (2, s)，1 ≤ s ≤ 2</span>
+          <output id="sOutput">1</output>
+        </label>
+        <input id="sRange" class="fullslider" type="range" min="1" max="2" step="0.01" value="1" aria-label="拖动线段 G 上的点 D">
+        <div class="mode-row" role="group" aria-label="旋转方向">
+          <button id="rotCcw" class="choice selected" type="button">↺ 逆时针 +90°</button>
+          <button id="rotCw" class="choice" type="button">↻ 顺时针 −90°</button>
+        </div>
+        <div class="statebox" aria-live="polite">
+          <div id="qLive" class="live">Q = (−3,0)，在 H 上</div>
+        </div>
+        <button id="snapBtn" class="action" type="button" style="margin-top:11px">将 D 吸附到正确位置</button>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="playbox-spacer" aria-hidden="true"></div>
+
+<section class="notes explain-only">
+  <h2>定义与注意</h2>
+  <p>若 Q 是点 P 关于点 A 的链垂点，则 ∠PAQ = 90° 且 AP = AQ。把从 A 到 P 的方向绕 A 逆时针转 90°，或顺时针转 90°，就得到 Q。第 (2) 问中「落在图形 H 上」指三角形三条边上的点，不包括只落在内部的点。左边是连接 (−4,0) 与 (0,4) 的线段：向右 4、向上 4，所以点满足「纵坐标 = 横坐标 + 4」，并且 −4 ≤ x ≤ 0；右边向右 4、向下 4，满足「纵坐标 = 4 − 横坐标」，并且 0 ≤ x ≤ 4。答案是两段的并，中间 (2, 7/2) 没有解，不要写成一整段 [−2, 4]。</p>
+</section>
+<footer>第27题扩展题目2 · 单文件 HTML · 不依赖网络或外部脚本</footer>
+</main>
+
+<div id="pinMask" class="pin-mask hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+  <div class="pin-card">
+    <h2 id="pinTitle">查看讲解和答案</h2>
+    <p>请输入密码后再打开讲解。关掉以后，步骤和结论会一起收起来。</p>
+    <input id="pinInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="四位数字密码">
+    <div id="pinErr" class="pin-err" role="status"></div>
+    <div class="pin-actions">
+      <button id="pinCancel" class="action" type="button">取消</button>
+      <button id="pinOk" class="action main" type="button">确定</button>
+    </div>
+  </div>
+</div>
+<script src="voice-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
